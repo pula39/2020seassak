@@ -100,6 +100,16 @@ int __cdecl main(void)
         if (iResult > 0) {
             printf("Bytes received: %d\n", iResult);
             printf("Bytes received: %s\n", recvbuf);
+            printf("Bytes received: %s\n", recvbuf);
+            printf("Bytes received: %s\n", recvbuf);
+            printf("Bytes received: %s\n", recvbuf);
+            printf("Bytes received: %s\n", recvbuf);
+            printf("Bytes received: %s\n", recvbuf);
+            printf("Bytes received: %s\n", recvbuf);
+            printf("Bytes received: %s\n", recvbuf);
+            printf("Bytes received: %s\n", recvbuf);
+            printf("Bytes received: %s\n", recvbuf);
+            printf("Bytes received: %s\n", recvbuf);
 
             // Echo the buffer back to the sender
             iSendResult = send(ClientSocket, recvbuf, iResult, 0);
