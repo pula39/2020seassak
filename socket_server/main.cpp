@@ -52,6 +52,7 @@ int __cdecl main(void)
         return 1;
     }
 
+	printf("2");
     // Create a SOCKET for connecting to server
     ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
     if (ListenSocket == INVALID_SOCKET) {
