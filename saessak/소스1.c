@@ -23,6 +23,7 @@
 #define RIGHT 77 //224 다음에 77
 #define UP 72 //224 다음에 72
 #define DOWN 80 //224 다음에 80
+#define SHIFT 16
 //////////////////////////////////////////////////////////////
 #define winX 30  //창의 시작 위치
 #define winY 2  //창의 시작 위치
@@ -55,6 +56,8 @@ int win[winHeight][winWidth]; //창의 내용물
 int brick_action; //객체의 행동
 int free_drop_delay = 20; //낙하 시간 간격 
 int free_drop_count; //낙하 시간 카운트  
+int state_hold = 0;
+int state_brick;
 // 객체의 모양 7개, 회전 4개, y, x
 char brick[7][4][4][4] = {
 // ㅗ 회전 0
@@ -455,6 +458,59 @@ void checkKey() //키보드 처리 담당
 		case DOWN:
 			brick_action = MOVE_DOWN;
 			break;
+		case 'r':
+			Start();
+			break;
+		case 'h':
+			if (state_hold == 0) {
+				for (int y = 0; y < 4; y++)
+				{
+					for (int x = 0; x < 4; x++)
+					{
+						if (brick[brick_shape][brick_rotation][y][x] == 1)
+						{
+							//gotoXY(winX + (brick_x + x) * 2 + 20, brick_y + y);
+							gotoXY(winX + x * 2 + 30, 5 + y);
+							printf("■");
+							//win[brick_y + y][brick_x + x] = 1;
+						}
+					}
+				}
+				state_hold = 1;
+				state_brick = brick_shape;
+				NewBrick();
+			}
+			else {
+				brick_shape = state_brick;
+				for (int y = 0; y < 4; y++)
+				{
+					for (int x = 0; x < 4; x++)
+					{
+						if (brick[brick_shape][brick_rotation][y][x] == 1)
+						{
+							gotoXY(winX + (brick_x + x) * 2, winY + brick_y + y);
+							printf("■");
+							//win[brick_y + y][brick_x + x] = 1;
+						}
+					}
+				}
+				state_hold = 0;
+				for (int y = 0; y < 4; y++)
+				{
+					for (int x = 0; x < 4; x++)
+					{
+						if (brick[brick_shape][brick_rotation][y][x] == 1)
+						{
+							//gotoXY(winX + (brick_x + x) * 2 + 20, brick_y + y);
+							gotoXY(winX + x * 2 + 30, 5 + y);
+							printf("  ");
+							//win[brick_y + y][brick_x + x] = 1;
+						}
+					}
+				}
+			}
+			break;
+
 		default:
 			brick_action = FREE_DROP;
 			break;
