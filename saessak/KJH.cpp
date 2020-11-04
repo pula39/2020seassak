@@ -587,6 +587,8 @@ int selectInFiveSec() {
 }
 
 int main() {
+	//git
+	printf("Hello Hello");
     char rsp[3][8] = { "rock", "scissor", "paper" };
     startScreen();
 
