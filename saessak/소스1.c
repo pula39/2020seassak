@@ -23,6 +23,8 @@
 #define RIGHT 77 //224 다음에 77
 #define UP 72 //224 다음에 72
 #define DOWN 80 //224 다음에 80
+#define R 114 //리셋
+#define SHIFT 16 //일단 보류
 //////////////////////////////////////////////////////////////
 #define winX 30  //창의 시작 위치
 #define winY 2  //창의 시작 위치
@@ -46,6 +48,7 @@ int IsCollision(); //충돌 검사
 void FixBrick(); //블록 고정하기
 void NewBrick(); //새 블록 만들기
 void BarCheck(); //누적된 막대 확인 제거, 점수 상승 
+void hideCursor(); //커서 숨기기
 //////////////////////////////////////////////////////////////
 // 게임 객체의 구조체 
 //////////////////////////////////////////////////////////////
@@ -198,8 +201,8 @@ char brick[7][4][4][4] = {
 0,0,0,0,
 0,0,0,0
 };
-int GameOver = 0;
-int GamePoint = 0;
+int GameOver;
+int GamePoint;
 
 //////////////////////////////////////////////////////////////
 // 함수 정의 부분 
@@ -229,7 +232,11 @@ void gotoXY(int x, int y) //콘솔 화면 특정 위치로 이동
 void Start() //게임 초기 상태 설정
 {
 	int x, y;
+	srand(time(NULL)); //난수 발생 시작점 초기화 
+	GameOver = 0; //게임 종료 값 초기화
+	GamePoint = 0; //게임 점수 초기화
 	NewBrick(); //새 개체 만들기
+	hideCursor();
 	free_drop_count = free_drop_delay; //20 프레임에 1회 다운 
 	//테트리스 윈도우 초기화
 	for (x = 0; x < winWidth; x++)
@@ -288,7 +295,6 @@ void FixBrick() //게임 객체 고정
 //////////////////////////////////////////////////////////////
 void NewBrick() //새로운 객체 만들기
 {
-	srand(time(NULL)); //난수 발생 시작점 초기화 
 	brick_x = winWidth / 2; //객체의 x 위치
 	brick_y = 1; //객체의 y 위치
 	brick_shape = rand() % 7; //모양 0 ~ 6 
@@ -455,9 +461,21 @@ void checkKey() //키보드 처리 담당
 		case DOWN:
 			brick_action = MOVE_DOWN;
 			break;
+		case R:
+			Start();
+			break;
 		default:
 			brick_action = FREE_DROP;
 			break;
 		}
 	}
+}
+////////////////////////////////////////////////////
+void hideCursor() //커서 숨기기
+{
+	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO info;
+	info.dwSize = 20;
+	info.bVisible = FALSE;
+	SetConsoleCursorInfo(consoleHandle, &info);
 }
