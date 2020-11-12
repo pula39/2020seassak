@@ -23,6 +23,7 @@
 #define RIGHT 77 //224 다음에 77
 #define UP 72 //224 다음에 72
 #define DOWN 80 //224 다음에 80
+#define SHIFT 16
 //////////////////////////////////////////////////////////////
 #define winX 30  //창의 시작 위치
 #define winY 2  //창의 시작 위치
@@ -40,6 +41,7 @@
 void gotoXY(int x, int y); //콘솔 화면 특정 위치로 이동
 void checkKey(); //키보드 처리 담당 
 void Display(); //화면 표시 담당, 1초에 25프레임 
+void Erase();
 void Update(); //게임 객체 상태 업데이트, 시뮬레이션 
 void Start(); //게임 초기 상태 설정
 int IsCollision(); //충돌 검사
@@ -51,10 +53,14 @@ void BarCheck(); //누적된 막대 확인 제거, 점수 상승
 //////////////////////////////////////////////////////////////
 int brick_x, brick_y; //객체의 윈도우 안의 위치 
 int brick_shape, brick_rotation; //객체의 모양, 회전
+int next_brick, save_next, tmp_brick;
+int brick_number = 0;
 int win[winHeight][winWidth]; //창의 내용물 
 int brick_action; //객체의 행동
 int free_drop_delay = 20; //낙하 시간 간격 
 int free_drop_count; //낙하 시간 카운트  
+int state_hold = 0;
+int state_brick, state_next = 0;
 // 객체의 모양 7개, 회전 4개, y, x
 char brick[7][4][4][4] = {
 // ㅗ 회전 0
@@ -217,7 +223,17 @@ void main()
 		Sleep(40); //40ms 잠자기
 	}
 }
-
+void Erase()
+{
+	for (int y = 0; y < 4; y++)
+	{
+		for (int x = 0; x < 4; x++)
+		{
+			gotoXY(winX + x * 2 - 10, 6 + y);
+			printf("  ");
+		}
+	}
+}
 //////////////////////////////////////////////////////////////
 void gotoXY(int x, int y) //콘솔 화면 특정 위치로 이동
 {
@@ -273,6 +289,7 @@ int IsCollision() //게임 객체 충돌 검사
 void FixBrick() //게임 객체 고정
 {
 	int x, y;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), brick_shape + 1);
 	for (y = 0; y < 4; y++)
 	{
 		for (x = 0; x < 4; x++)
@@ -283,17 +300,29 @@ void FixBrick() //게임 객체 고정
 			}
 		}
 	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 }
 
 //////////////////////////////////////////////////////////////
 void NewBrick() //새로운 객체 만들기
 {
+	Erase();
 	srand(time(NULL)); //난수 발생 시작점 초기화 
 	brick_x = winWidth / 2; //객체의 x 위치
 	brick_y = 1; //객체의 y 위치
-	brick_shape = rand() % 7; //모양 0 ~ 6 
+	if (brick_number == 0) {
+		brick_shape = rand() % 7; //모양 0 ~ 6 
+		next_brick = rand() % 7;
+		tmp_brick = next_brick;
+	}
+	else {
+		brick_shape = tmp_brick;
+		next_brick = rand() % 7;
+		tmp_brick = next_brick;
+	}
 	brick_rotation = 0; //회전 없음 
 	brick_action = FREE_DROP;
+	brick_number++;
 }
 
 //////////////////////////////////////////////////////////////
@@ -343,6 +372,7 @@ void Display() //화면에 현재 상태 그리기
 	}
 
 	//블록 그리기
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), brick_shape + 1);
 	for (y = 0; y < 4; y++)
 	{
 		for (x = 0; x < 4; x++)
@@ -354,6 +384,23 @@ void Display() //화면에 현재 상태 그리기
 			}
 		}
 	}
+	//다음 블록
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), next_brick + 1);
+	for (y = 0; y < 4; y++)
+	{
+		for (x = 0; x < 4; x++)
+		{
+			if (brick[next_brick][0][y][x] == 1)
+			{
+				gotoXY(winX + x * 2 - 10, 6 + y);
+				printf("■");
+			}
+		}
+	}
+	//FixBrick();
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+	gotoXY(winX + x * 2 - 19, y);
+	printf("다음 블록");
 	//점수 표시
 	gotoXY(30, 25);
 	printf("Point = %d", GamePoint);
@@ -455,6 +502,57 @@ void checkKey() //키보드 처리 담당
 		case DOWN:
 			brick_action = MOVE_DOWN;
 			break;
+		case 'r':
+			Start();
+			break;
+		case 'h':
+			int x, y;
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), brick_shape + 1);
+			if (state_hold == 0) {
+				for (y = 0; y < 4; y++)
+				{
+					for (x = 0; x < 4; x++)
+					{
+						if (brick[brick_shape][brick_rotation][y][x] == 1)
+						{
+							gotoXY(winX + x * 2 + 30, 5 + y);
+							printf("■");
+						}
+					}
+				}
+				state_hold = 1;
+				state_brick = brick_shape;
+				NewBrick();
+			}
+			else {
+				brick_shape = state_brick;
+				for (y = 0; y < 4; y++)
+				{
+					for (x = 0; x < 4; x++)
+					{
+						if (brick[brick_shape][brick_rotation][y][x] == 1)
+						{
+							gotoXY(winX + (brick_x + x) * 2, winY + brick_y + y);
+							printf("■");
+						}
+					}
+				}
+				for (y = 0; y < 4; y++)
+				{
+					for (x = 0; x < 4; x++)
+					{
+						gotoXY(winX + x * 2 + 30, 5 + y);
+						printf("  ");
+					}
+				}
+				state_hold = 0;
+				
+			}
+			gotoXY(winX + x * 2 + 20, y-1);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+			printf("Holding");
+			break;
+
 		default:
 			brick_action = FREE_DROP;
 			break;
