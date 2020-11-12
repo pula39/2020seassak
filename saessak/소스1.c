@@ -53,7 +53,8 @@ void BarCheck(); //누적된 막대 확인 제거, 점수 상승
 //////////////////////////////////////////////////////////////
 int brick_x, brick_y; //객체의 윈도우 안의 위치 
 int brick_shape, brick_rotation; //객체의 모양, 회전
-int next_brick, save_next;
+int next_brick, save_next, tmp_brick;
+int brick_number = 0;
 int win[winHeight][winWidth]; //창의 내용물 
 int brick_action; //객체의 행동
 int free_drop_delay = 20; //낙하 시간 간격 
@@ -288,6 +289,7 @@ int IsCollision() //게임 객체 충돌 검사
 void FixBrick() //게임 객체 고정
 {
 	int x, y;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), brick_shape + 1);
 	for (y = 0; y < 4; y++)
 	{
 		for (x = 0; x < 4; x++)
@@ -298,6 +300,7 @@ void FixBrick() //게임 객체 고정
 			}
 		}
 	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 }
 
 //////////////////////////////////////////////////////////////
@@ -307,10 +310,19 @@ void NewBrick() //새로운 객체 만들기
 	srand(time(NULL)); //난수 발생 시작점 초기화 
 	brick_x = winWidth / 2; //객체의 x 위치
 	brick_y = 1; //객체의 y 위치
-	brick_shape = rand() % 7; //모양 0 ~ 6 
-	next_brick = rand() % 7;
+	if (brick_number == 0) {
+		brick_shape = rand() % 7; //모양 0 ~ 6 
+		next_brick = rand() % 7;
+		tmp_brick = next_brick;
+	}
+	else {
+		brick_shape = tmp_brick;
+		next_brick = rand() % 7;
+		tmp_brick = next_brick;
+	}
 	brick_rotation = 0; //회전 없음 
 	brick_action = FREE_DROP;
+	brick_number++;
 }
 
 //////////////////////////////////////////////////////////////
