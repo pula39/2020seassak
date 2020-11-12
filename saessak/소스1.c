@@ -506,11 +506,12 @@ void checkKey() //키보드 처리 담당
 			Start();
 			break;
 		case 'h':
+			int x, y;
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), brick_shape + 1);
 			if (state_hold == 0) {
-				for (int y = 0; y < 4; y++)
+				for (y = 0; y < 4; y++)
 				{
-					for (int x = 0; x < 4; x++)
+					for (x = 0; x < 4; x++)
 					{
 						if (brick[brick_shape][brick_rotation][y][x] == 1)
 						{
@@ -525,9 +526,9 @@ void checkKey() //키보드 처리 담당
 			}
 			else {
 				brick_shape = state_brick;
-				for (int y = 0; y < 4; y++)
+				for (y = 0; y < 4; y++)
 				{
-					for (int x = 0; x < 4; x++)
+					for (x = 0; x < 4; x++)
 					{
 						if (brick[brick_shape][brick_rotation][y][x] == 1)
 						{
@@ -536,9 +537,9 @@ void checkKey() //키보드 처리 담당
 						}
 					}
 				}
-				for (int y = 0; y < 4; y++)
+				for (y = 0; y < 4; y++)
 				{
-					for (int x = 0; x < 4; x++)
+					for (x = 0; x < 4; x++)
 					{
 						gotoXY(winX + x * 2 + 30, 5 + y);
 						printf("  ");
@@ -547,7 +548,9 @@ void checkKey() //키보드 처리 담당
 				state_hold = 0;
 				
 			}
+			gotoXY(winX + x * 2 + 20, y-1);
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+			printf("Holding");
 			break;
 
 		default:
