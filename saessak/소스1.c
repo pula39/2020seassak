@@ -23,7 +23,8 @@
 #define RIGHT 77 //224 ´ÙÀ½¿¡ 77
 #define UP 72 //224 ´ÙÀ½¿¡ 72
 #define DOWN 80 //224 ´ÙÀ½¿¡ 80
-#define SHIFT 16
+#define R 114 //¸®¼Â
+#define SHIFT 16 //ÀÏ´Ü º¸·ù
 //////////////////////////////////////////////////////////////
 #define winX 30  //Ã¢ÀÇ ½ÃÀÛ À§Ä¡
 #define winY 2  //Ã¢ÀÇ ½ÃÀÛ À§Ä¡
@@ -48,6 +49,7 @@ int IsCollision(); //Ãæµ¹ °Ë»ç
 void FixBrick(); //ºí·Ï °íÁ¤ÇÏ±â
 void NewBrick(); //»õ ºí·Ï ¸¸µé±â
 void BarCheck(); //´©ÀûµÈ ¸·´ë È®ÀÎ Á¦°Å, Á¡¼ö »ó½Â 
+void hideCursor(); //Ä¿¼­ ¼û±â±â
 //////////////////////////////////////////////////////////////
 // °ÔÀÓ °´Ã¼ÀÇ ±¸Á¶Ã¼ 
 //////////////////////////////////////////////////////////////
@@ -204,8 +206,8 @@ char brick[7][4][4][4] = {
 0,0,0,0,
 0,0,0,0
 };
-int GameOver = 0;
-int GamePoint = 0;
+int GameOver;
+int GamePoint;
 
 //////////////////////////////////////////////////////////////
 // ÇÔ¼ö Á¤ÀÇ ºÎºĞ 
@@ -245,7 +247,11 @@ void gotoXY(int x, int y) //ÄÜ¼Ö È­¸é Æ¯Á¤ À§Ä¡·Î ÀÌµ¿
 void Start() //°ÔÀÓ ÃÊ±â »óÅÂ ¼³Á¤
 {
 	int x, y;
+	srand(time(NULL)); //³­¼ö ¹ß»ı ½ÃÀÛÁ¡ ÃÊ±âÈ­ 
+	GameOver = 0; //°ÔÀÓ Á¾·á °ª ÃÊ±âÈ­
+	GamePoint = 0; //°ÔÀÓ Á¡¼ö ÃÊ±âÈ­
 	NewBrick(); //»õ °³Ã¼ ¸¸µé±â
+	hideCursor();
 	free_drop_count = free_drop_delay; //20 ÇÁ·¹ÀÓ¿¡ 1È¸ ´Ù¿î 
 	//Å×Æ®¸®½º À©µµ¿ì ÃÊ±âÈ­
 	for (x = 0; x < winWidth; x++)
@@ -306,8 +312,11 @@ void FixBrick() //°ÔÀÓ °´Ã¼ °íÁ¤
 //////////////////////////////////////////////////////////////
 void NewBrick() //»õ·Î¿î °´Ã¼ ¸¸µé±â
 {
+<<<<<<< HEAD
 	Erase();
 	srand(time(NULL)); //³­¼ö ¹ß»ı ½ÃÀÛÁ¡ ÃÊ±âÈ­ 
+=======
+>>>>>>> origin/sub_ì •ë™ì›
 	brick_x = winWidth / 2; //°´Ã¼ÀÇ x À§Ä¡
 	brick_y = 1; //°´Ã¼ÀÇ y À§Ä¡
 	if (brick_number == 0) {
@@ -502,6 +511,7 @@ void checkKey() //Å°º¸µå Ã³¸® ´ã´ç
 		case DOWN:
 			brick_action = MOVE_DOWN;
 			break;
+<<<<<<< HEAD
 		case 'r':
 			Start();
 			break;
@@ -553,9 +563,23 @@ void checkKey() //Å°º¸µå Ã³¸® ´ã´ç
 			printf("Holding");
 			break;
 
+=======
+		case R:
+			Start();
+			break;
+>>>>>>> origin/sub_ì •ë™ì›
 		default:
 			brick_action = FREE_DROP;
 			break;
 		}
 	}
+}
+////////////////////////////////////////////////////
+void hideCursor() //Ä¿¼­ ¼û±â±â
+{
+	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO info;
+	info.dwSize = 20;
+	info.bVisible = FALSE;
+	SetConsoleCursorInfo(consoleHandle, &info);
 }
