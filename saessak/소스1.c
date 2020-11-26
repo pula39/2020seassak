@@ -36,6 +36,8 @@
 #define MOVE_RIGHT 3 //우측 이동
 #define MOVE_DROP 4 //떨어뜨리기
 #define ROTATION 5 //떨어뜨리기
+
+#define TEDURI_WALL -1 //벽
 //////////////////////////////////////////////////////////////
 // 함수 프로토타입 
 //////////////////////////////////////////////////////////////
@@ -261,7 +263,7 @@ void Start() //게임 초기 상태 설정
 			if (x == 0 || x == winWidth - 1 ||
 				y == 0 || y == winHeight - 1)
 			{
-				win[y][x] = 2;
+				win[y][x] = TEDURI_WALL;
 			}
 			else
 			{
@@ -373,8 +375,11 @@ void Display() //화면에 현재 상태 그리기
 		gotoXY(winX, winY + y);
 		for (x = 0; x < winWidth; x++)
 		{
+			// 차있는 블럭
+			// win 1 -> 블럭
+			// win 2 -> 테두리벽
 			if (win[y][x] == 1) printf("■");
-			else if (win[y][x] == 2) printf("□");
+			else if (win[y][x] == TEDURI_WALL) printf("□");
 			else printf("·");
 		}
 		printf("\n");
