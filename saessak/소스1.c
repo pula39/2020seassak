@@ -56,7 +56,8 @@ void hideCursor(); //커서 숨기기
 // 게임 객체의 구조체 
 //////////////////////////////////////////////////////////////
 int brick_x, brick_y; //객체의 윈도우 안의 위치 
-int brick_shape, brick_rotation; //객체의 모양, 회전
+int brick_shape; //객체의 모양
+int brick_rotation; //객체의 회전
 int next_brick, save_next, tmp_brick;
 int brick_number = 0;
 int win[winHeight][winWidth]; //창의 내용물 
@@ -304,7 +305,8 @@ void FixBrick() //게임 객체 고정
 		{
 			if (brick[brick_shape][brick_rotation][y][x] == 1)
 			{
-				win[brick_y + y][brick_x + x] = 1;
+				// 원래는 win[brick_y + y][brick_x + x] = 1;
+				win[brick_y + y][brick_x + x] = brick_shape + 1;
 			}
 		}
 	}
@@ -342,10 +344,14 @@ void BarCheck() //누적 블록 제거 점수 올리기
 	int x, y, bar, i, j;
 	for (y = 1; y < winHeight - 1; y++)
 	{
+		//한줄 검사 Loop 
 		bar = 0;
+		// bar : 그 줄에 얼마나 있냐 맞습니다.
 		for (x = 1; x < winWidth - 1; x++)
 		{
-			bar += win[y][x];
+			if (win[y][x] >= 1) {
+				bar++;
+			}
 		}
 		if (bar == winWidth - 2)
 		{
@@ -378,14 +384,25 @@ void Display() //화면에 현재 상태 그리기
 			// 차있는 블럭
 			// win 1 -> 블럭
 			// win 2 -> 테두리벽
-			if (win[y][x] == 1) printf("■");
-			else if (win[y][x] == TEDURI_WALL) printf("□");
-			else printf("·");
+			if (win[y][x] >= 1) {
+				//이쁘다...
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), win[y][x]);
+				printf("■");
+			}
+			else if (win[y][x] == TEDURI_WALL) {
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+				printf("□");
+			}
+			else {
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+				printf("·");
+			}
 		}
 		printf("\n");
 	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 
-	//블록 그리기
+	// 지금 컨트롤하는 블록 그리기
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), brick_shape + 1);
 	for (y = 0; y < 4; y++)
 	{
@@ -398,6 +415,7 @@ void Display() //화면에 현재 상태 그리기
 			}
 		}
 	}
+
 	//다음 블록
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), next_brick + 1);
 	for (y = 0; y < 4; y++)
