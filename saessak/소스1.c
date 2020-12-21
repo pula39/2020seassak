@@ -58,6 +58,7 @@ int win[winHeight][winWidth]; //창의 내용물
 int brick_action; //객체의 행동
 int free_drop_delay = 20; //낙하 시간 간격 
 int free_drop_count; //낙하 시간 카운트  
+int level = 0; //게임 레벨
 // 객체의 모양 7개, 회전 4개, y, x
 char brick[7][4][4][4] = {
 // ㅗ 회전 0
@@ -232,7 +233,7 @@ void gotoXY(int x, int y) //콘솔 화면 특정 위치로 이동
 void Start() //게임 초기 상태 설정
 {
 	int x, y;
-	srand(time(NULL)); //난수 발생 시작점 초기화 
+	srand(time(NULL)); //난수 발생 시작점 초기화
 	GameOver = 0; //게임 종료 값 초기화
 	GamePoint = 0; //게임 점수 초기화
 	NewBrick(); //새 개체 만들기
@@ -316,8 +317,10 @@ void BarCheck() //누적 블록 제거 점수 올리기
 		if (bar == winWidth - 2)
 		{
 			GamePoint++;
-			if (GamePoint % 20 == 0) free_drop_delay--;
-			if (free_drop_delay < 0) free_drop_delay = 0;
+			if (free_drop_delay >= 0 && GamePoint % 20 == 0) {
+				level++;
+				free_drop_delay -= 2;
+			}
 			for (i = y - 1; i > 0; i--)
 			{
 				for (j = 1; j < winWidth - 1; j++)
@@ -362,7 +365,7 @@ void Display() //화면에 현재 상태 그리기
 	}
 	//점수 표시
 	gotoXY(30, 25);
-	printf("Point = %d", GamePoint);
+	printf("Point = %d | Level = %d", GamePoint, level);
 }
 
 //////////////////////////////////////////////////////////////
