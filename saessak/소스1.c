@@ -13,6 +13,8 @@
 #include <windows.h> //윈도우즈 API
 //SetConsoleCursorPosition(), GetStdHandle(), Sleep()
 #include <conio.h> //getch(), kbhit()
+#include<mmsystem.h>
+#pragma comment(lib,"winmm.lib")
 //////////////////////////////////////////////////////////////
 // 게임에 자주 사용하는 키보드 상수 
 //////////////////////////////////////////////////////////////
@@ -23,7 +25,8 @@
 #define RIGHT 77 //224 다음에 77
 #define UP 72 //224 다음에 72
 #define DOWN 80 //224 다음에 80
-#define SHIFT 16
+#define R 114 //리셋
+#define SHIFT 16 //일단 보류
 //////////////////////////////////////////////////////////////
 #define winX 30  //창의 시작 위치
 #define winY 2  //창의 시작 위치
@@ -35,6 +38,8 @@
 #define MOVE_RIGHT 3 //우측 이동
 #define MOVE_DROP 4 //떨어뜨리기
 #define ROTATION 5 //떨어뜨리기
+
+#define TEDURI_WALL -1 //벽
 //////////////////////////////////////////////////////////////
 // 함수 프로토타입 
 //////////////////////////////////////////////////////////////
@@ -48,11 +53,13 @@ int IsCollision(); //충돌 검사
 void FixBrick(); //블록 고정하기
 void NewBrick(); //새 블록 만들기
 void BarCheck(); //누적된 막대 확인 제거, 점수 상승 
+void hideCursor(); //커서 숨기기
 //////////////////////////////////////////////////////////////
 // 게임 객체의 구조체 
 //////////////////////////////////////////////////////////////
 int brick_x, brick_y; //객체의 윈도우 안의 위치 
-int brick_shape, brick_rotation; //객체의 모양, 회전
+int brick_shape; //객체의 모양
+int brick_rotation; //객체의 회전
 int next_brick, save_next, tmp_brick;
 int brick_number = 0;
 int win[winHeight][winWidth]; //창의 내용물 
@@ -204,8 +211,8 @@ char brick[7][4][4][4] = {
 0,0,0,0,
 0,0,0,0
 };
-int GameOver = 0;
-int GamePoint = 0;
+int GameOver;
+int GamePoint;
 
 //////////////////////////////////////////////////////////////
 // 함수 정의 부분 
@@ -245,7 +252,11 @@ void gotoXY(int x, int y) //콘솔 화면 특정 위치로 이동
 void Start() //게임 초기 상태 설정
 {
 	int x, y;
+	srand(time(NULL)); //난수 발생 시작점 초기화 
+	GameOver = 0; //게임 종료 값 초기화
+	GamePoint = 0; //게임 점수 초기화
 	NewBrick(); //새 개체 만들기
+	hideCursor();
 	free_drop_count = free_drop_delay; //20 프레임에 1회 다운 
 	//테트리스 윈도우 초기화
 	for (x = 0; x < winWidth; x++)
@@ -255,7 +266,7 @@ void Start() //게임 초기 상태 설정
 			if (x == 0 || x == winWidth - 1 ||
 				y == 0 || y == winHeight - 1)
 			{
-				win[y][x] = 2;
+				win[y][x] = TEDURI_WALL;
 			}
 			else
 			{
@@ -296,7 +307,8 @@ void FixBrick() //게임 객체 고정
 		{
 			if (brick[brick_shape][brick_rotation][y][x] == 1)
 			{
-				win[brick_y + y][brick_x + x] = 1;
+				// 원래는 win[brick_y + y][brick_x + x] = 1;
+				win[brick_y + y][brick_x + x] = brick_shape + 1;
 			}
 		}
 	}
@@ -331,13 +343,18 @@ void BarCheck() //누적 블록 제거 점수 올리기
 	int x, y, bar, i, j;
 	for (y = 1; y < winHeight - 1; y++)
 	{
+		//한줄 검사 Loop 
 		bar = 0;
+		// bar : 그 줄에 얼마나 있냐 맞습니다.
 		for (x = 1; x < winWidth - 1; x++)
 		{
-			bar += win[y][x];
+			if (win[y][x] >= 1) {
+				bar++;
+			}
 		}
 		if (bar == winWidth - 2)
 		{
+			PlaySound(TEXT("clearSound.wav"), NULL, SND_ASYNC | SND_NODEFAULT);
 			GamePoint++;
 			if (GamePoint % 20 == 0) free_drop_delay--;
 			if (free_drop_delay < 0) free_drop_delay = 0;
@@ -364,14 +381,28 @@ void Display() //화면에 현재 상태 그리기
 		gotoXY(winX, winY + y);
 		for (x = 0; x < winWidth; x++)
 		{
-			if (win[y][x] == 1) printf("■");
-			else if (win[y][x] == 2) printf("□");
-			else printf("·");
+			// 차있는 블럭
+			// win 1 -> 블럭
+			// win 2 -> 테두리벽
+			if (win[y][x] >= 1) {
+				//이쁘다...
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), win[y][x]);
+				printf("■");
+			}
+			else if (win[y][x] == TEDURI_WALL) {
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+				printf("□");
+			}
+			else {
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+				printf("·");
+			}
 		}
 		printf("\n");
 	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 
-	//블록 그리기
+	// 지금 컨트롤하는 블록 그리기
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), brick_shape + 1);
 	for (y = 0; y < 4; y++)
 	{
@@ -384,6 +415,7 @@ void Display() //화면에 현재 상태 그리기
 			}
 		}
 	}
+
 	//다음 블록
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), next_brick + 1);
 	for (y = 0; y < 4; y++)
@@ -552,10 +584,19 @@ void checkKey() //키보드 처리 담당
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 			printf("Holding");
 			break;
-
 		default:
 			brick_action = FREE_DROP;
 			break;
 		}
+		PlaySound(TEXT("keyboardSound.wav"), NULL, SND_ASYNC | SND_NODEFAULT);
 	}
+}
+////////////////////////////////////////////////////
+void hideCursor() //커서 숨기기
+{
+	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO info;
+	info.dwSize = 20;
+	info.bVisible = FALSE;
+	SetConsoleCursorInfo(consoleHandle, &info);
 }
