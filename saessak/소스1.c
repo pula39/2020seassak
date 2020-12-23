@@ -13,6 +13,8 @@
 #include <windows.h> //윈도우즈 API
 //SetConsoleCursorPosition(), GetStdHandle(), Sleep()
 #include <conio.h> //getch(), kbhit()
+#include<mmsystem.h>
+#pragma comment(lib,"winmm.lib")
 //////////////////////////////////////////////////////////////
 // 게임에 자주 사용하는 키보드 상수 
 //////////////////////////////////////////////////////////////
@@ -352,6 +354,7 @@ void BarCheck() //누적 블록 제거 점수 올리기
 		}
 		if (bar == winWidth - 2)
 		{
+			PlaySound(TEXT("clearSound.wav"), NULL, SND_ASYNC | SND_NODEFAULT);
 			GamePoint++;
 			if (free_drop_delay >= 0 && GamePoint % 20 == 0) {
 				level++;
@@ -587,6 +590,7 @@ void checkKey() //키보드 처리 담당
 			brick_action = FREE_DROP;
 			break;
 		}
+		PlaySound(TEXT("keyboardSound.wav"), NULL, SND_ASYNC | SND_NODEFAULT);
 	}
 }
 ////////////////////////////////////////////////////
