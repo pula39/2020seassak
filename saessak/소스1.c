@@ -23,7 +23,6 @@
 #define RIGHT 77 //224 ´ÙÀ½¿¡ 77
 #define UP 72 //224 ´ÙÀ½¿¡ 72
 #define DOWN 80 //224 ´ÙÀ½¿¡ 80
-#define R 114 //¸®¼Â
 #define SHIFT 16 //ÀÏ´Ü º¸·ù
 //////////////////////////////////////////////////////////////
 #define winX 30  //Ã¢ÀÇ ½ÃÀÛ À§Ä¡
@@ -66,6 +65,7 @@ int free_drop_delay = 20; //³«ÇÏ ½Ã°£ °£°İ
 int free_drop_count; //³«ÇÏ ½Ã°£ Ä«¿îÆ®  
 int state_hold = 0;
 int state_brick, state_next = 0;
+int level = 0; //°ÔÀÓ ·¹º§
 // °´Ã¼ÀÇ ¸ğ¾ç 7°³, È¸Àü 4°³, y, x
 char brick[7][4][4][4] = {
 // ¤Ç È¸Àü 0
@@ -250,7 +250,7 @@ void gotoXY(int x, int y) //ÄÜ¼Ö È­¸é Æ¯Á¤ À§Ä¡·Î ÀÌµ¿
 void Start() //°ÔÀÓ ÃÊ±â »óÅÂ ¼³Á¤
 {
 	int x, y;
-	srand(time(NULL)); //³­¼ö ¹ß»ı ½ÃÀÛÁ¡ ÃÊ±âÈ­ 
+	srand(time(NULL)); //³­¼ö ¹ß»ı ½ÃÀÛÁ¡ ÃÊ±âÈ­
 	GameOver = 0; //°ÔÀÓ Á¾·á °ª ÃÊ±âÈ­
 	GamePoint = 0; //°ÔÀÓ Á¡¼ö ÃÊ±âÈ­
 	NewBrick(); //»õ °³Ã¼ ¸¸µé±â
@@ -316,11 +316,8 @@ void FixBrick() //°ÔÀÓ °´Ã¼ °íÁ¤
 //////////////////////////////////////////////////////////////
 void NewBrick() //»õ·Î¿î °´Ã¼ ¸¸µé±â
 {
-<<<<<<< HEAD
 	Erase();
 	srand(time(NULL)); //³­¼ö ¹ß»ı ½ÃÀÛÁ¡ ÃÊ±âÈ­ 
-=======
->>>>>>> origin/sub_ì •ë™ì›
 	brick_x = winWidth / 2; //°´Ã¼ÀÇ x À§Ä¡
 	brick_y = 1; //°´Ã¼ÀÇ y À§Ä¡
 	if (brick_number == 0) {
@@ -356,8 +353,10 @@ void BarCheck() //´©Àû ºí·Ï Á¦°Å Á¡¼ö ¿Ã¸®±â
 		if (bar == winWidth - 2)
 		{
 			GamePoint++;
-			if (GamePoint % 20 == 0) free_drop_delay--;
-			if (free_drop_delay < 0) free_drop_delay = 0;
+			if (free_drop_delay >= 0 && GamePoint % 20 == 0) {
+				level++;
+				free_drop_delay -= 2;
+			}
 			for (i = y - 1; i > 0; i--)
 			{
 				for (j = 1; j < winWidth - 1; j++)
@@ -435,7 +434,7 @@ void Display() //È­¸é¿¡ ÇöÀç »óÅÂ ±×¸®±â
 	printf("´ÙÀ½ ºí·Ï");
 	//Á¡¼ö Ç¥½Ã
 	gotoXY(30, 25);
-	printf("Point = %d", GamePoint);
+	printf("Point = %d | Level = %d", GamePoint, level);
 }
 
 //////////////////////////////////////////////////////////////
@@ -534,7 +533,6 @@ void checkKey() //Å°º¸µå Ã³¸® ´ã´ç
 		case DOWN:
 			brick_action = MOVE_DOWN;
 			break;
-<<<<<<< HEAD
 		case 'r':
 			Start();
 			break;
@@ -585,12 +583,6 @@ void checkKey() //Å°º¸µå Ã³¸® ´ã´ç
 			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 			printf("Holding");
 			break;
-
-=======
-		case R:
-			Start();
-			break;
->>>>>>> origin/sub_ì •ë™ì›
 		default:
 			brick_action = FREE_DROP;
 			break;
