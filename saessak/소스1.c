@@ -1,211 +1,211 @@
 //////////////////////////////////////////////////////////////
-// C Ç¥ÁØ ¶óÀÌºê·¯¸® Çì´õ ÆÄÀÏ
+// C í‘œì¤€ ë¼ì´ë¸ŒëŸ¬ë¦¬ í—¤ë” íŒŒì¼
 //////////////////////////////////////////////////////////////
 #include <stdio.h> //printf(), scanf()
 #include <stdlib.h> //srand(), rand(), malloc()
-#include <string.h> //¹®ÀÚ¿­
-#include <ctype.h> //¹®ÀÚ
+#include <string.h> //ë¬¸ìì—´
+#include <ctype.h> //ë¬¸ì
 #include <time.h> //time(), clock()
-#include <math.h> //¼öÇĞÇÔ¼ö
+#include <math.h> //ìˆ˜í•™í•¨ìˆ˜
 //////////////////////////////////////////////////////////////
-// OS, Hardware Á¾¼Ó ¶óÀÌºê·¯¸® Çì´õ ÆÄÀÏ 
+// OS, Hardware ì¢…ì† ë¼ì´ë¸ŒëŸ¬ë¦¬ í—¤ë” íŒŒì¼ 
 //////////////////////////////////////////////////////////////
-#include <windows.h> //À©µµ¿ìÁî API
+#include <windows.h> //ìœˆë„ìš°ì¦ˆ API
 //SetConsoleCursorPosition(), GetStdHandle(), Sleep()
 #include <conio.h> //getch(), kbhit()
 #include<mmsystem.h>
 #pragma comment(lib,"winmm.lib")
 //////////////////////////////////////////////////////////////
-// °ÔÀÓ¿¡ ÀÚÁÖ »ç¿ëÇÏ´Â Å°º¸µå »ó¼ö 
+// ê²Œì„ì— ìì£¼ ì‚¬ìš©í•˜ëŠ” í‚¤ë³´ë“œ ìƒìˆ˜ 
 //////////////////////////////////////////////////////////////
-#define ESC 27 //°ÔÀÓ Å»Ãâ 
+#define ESC 27 //ê²Œì„ íƒˆì¶œ 
 #define ENTER 13
-#define SPACE 32 //ÃÑ¾Ë, Á¡ÇÁ 
-#define LEFT 75 //224 ´ÙÀ½¿¡ 75
-#define RIGHT 77 //224 ´ÙÀ½¿¡ 77
-#define UP 72 //224 ´ÙÀ½¿¡ 72
-#define DOWN 80 //224 ´ÙÀ½¿¡ 80
-#define SHIFT 16 //ÀÏ´Ü º¸·ù
+#define SPACE 32 //ì´ì•Œ, ì í”„ 
+#define LEFT 75 //224 ë‹¤ìŒì— 75
+#define RIGHT 77 //224 ë‹¤ìŒì— 77
+#define UP 72 //224 ë‹¤ìŒì— 72
+#define DOWN 80 //224 ë‹¤ìŒì— 80
+#define SHIFT 16 //ì¼ë‹¨ ë³´ë¥˜
 //////////////////////////////////////////////////////////////
-#define winX 30  //Ã¢ÀÇ ½ÃÀÛ À§Ä¡
-#define winY 2  //Ã¢ÀÇ ½ÃÀÛ À§Ä¡
-#define winWidth 10 //Ã¢ÀÇ Æø
-#define winHeight 20 //Ã¢ÀÇ ³ôÀÌ
-#define FREE_DROP 0 //¾Æ·¡ ÀÚÀ¯ ³«ÇÏ
-#define MOVE_DOWN 1 //¾Æ·¡ °­Á¦ ÀÌµ¿
-#define MOVE_LEFT 2 //ÁÂÃø ÀÌµ¿
-#define MOVE_RIGHT 3 //¿ìÃø ÀÌµ¿
-#define MOVE_DROP 4 //¶³¾î¶ß¸®±â
-#define ROTATION 5 //¶³¾î¶ß¸®±â
+#define winX 30  //ì°½ì˜ ì‹œì‘ ìœ„ì¹˜
+#define winY 2  //ì°½ì˜ ì‹œì‘ ìœ„ì¹˜
+#define winWidth 10 //ì°½ì˜ í­
+#define winHeight 20 //ì°½ì˜ ë†’ì´
+#define FREE_DROP 0 //ì•„ë˜ ììœ  ë‚™í•˜
+#define MOVE_DOWN 1 //ì•„ë˜ ê°•ì œ ì´ë™
+#define MOVE_LEFT 2 //ì¢Œì¸¡ ì´ë™
+#define MOVE_RIGHT 3 //ìš°ì¸¡ ì´ë™
+#define MOVE_DROP 4 //ë–¨ì–´ëœ¨ë¦¬ê¸°
+#define ROTATION 5 //ë–¨ì–´ëœ¨ë¦¬ê¸°
 
-#define TEDURI_WALL -1 //º®
+#define TEDURI_WALL -1 //ë²½
 //////////////////////////////////////////////////////////////
-// ÇÔ¼ö ÇÁ·ÎÅäÅ¸ÀÔ 
+// í•¨ìˆ˜ í”„ë¡œí† íƒ€ì… 
 //////////////////////////////////////////////////////////////
-void gotoXY(int x, int y); //ÄÜ¼Ö È­¸é Æ¯Á¤ À§Ä¡·Î ÀÌµ¿
-void checkKey(); //Å°º¸µå Ã³¸® ´ã´ç 
-void Display(); //È­¸é Ç¥½Ã ´ã´ç, 1ÃÊ¿¡ 25ÇÁ·¹ÀÓ 
+void gotoXY(int x, int y); //ì½˜ì†” í™”ë©´ íŠ¹ì • ìœ„ì¹˜ë¡œ ì´ë™
+void checkKey(); //í‚¤ë³´ë“œ ì²˜ë¦¬ ë‹´ë‹¹ 
+void Display(); //í™”ë©´ í‘œì‹œ ë‹´ë‹¹, 1ì´ˆì— 25í”„ë ˆì„ 
 void Erase();
-void Update(); //°ÔÀÓ °´Ã¼ »óÅÂ ¾÷µ¥ÀÌÆ®, ½Ã¹Ä·¹ÀÌ¼Ç 
-void Start(); //°ÔÀÓ ÃÊ±â »óÅÂ ¼³Á¤
-int IsCollision(); //Ãæµ¹ °Ë»ç
-void FixBrick(); //ºí·Ï °íÁ¤ÇÏ±â
-void NewBrick(); //»õ ºí·Ï ¸¸µé±â
-void BarCheck(); //´©ÀûµÈ ¸·´ë È®ÀÎ Á¦°Å, Á¡¼ö »ó½Â 
-void hideCursor(); //Ä¿¼­ ¼û±â±â
+void Update(); //ê²Œì„ ê°ì²´ ìƒíƒœ ì—…ë°ì´íŠ¸, ì‹œë®¬ë ˆì´ì…˜ 
+void Start(); //ê²Œì„ ì´ˆê¸° ìƒíƒœ ì„¤ì •
+int IsCollision(); //ì¶©ëŒ ê²€ì‚¬
+void FixBrick(); //ë¸”ë¡ ê³ ì •í•˜ê¸°
+void NewBrick(); //ìƒˆ ë¸”ë¡ ë§Œë“¤ê¸°
+void BarCheck(); //ëˆ„ì ëœ ë§‰ëŒ€ í™•ì¸ ì œê±°, ì ìˆ˜ ìƒìŠ¹ 
+void hideCursor(); //ì»¤ì„œ ìˆ¨ê¸°ê¸°
 //////////////////////////////////////////////////////////////
-// °ÔÀÓ °´Ã¼ÀÇ ±¸Á¶Ã¼ 
+// ê²Œì„ ê°ì²´ì˜ êµ¬ì¡°ì²´ 
 //////////////////////////////////////////////////////////////
-int brick_x, brick_y; //°´Ã¼ÀÇ À©µµ¿ì ¾ÈÀÇ À§Ä¡ 
-int brick_shape; //°´Ã¼ÀÇ ¸ğ¾ç
-int brick_rotation; //°´Ã¼ÀÇ È¸Àü
+int brick_x, brick_y; //ê°ì²´ì˜ ìœˆë„ìš° ì•ˆì˜ ìœ„ì¹˜ 
+int brick_shape; //ê°ì²´ì˜ ëª¨ì–‘
+int brick_rotation; //ê°ì²´ì˜ íšŒì „
 int next_brick, save_next, tmp_brick;
 int brick_number = 0;
-int win[winHeight][winWidth]; //Ã¢ÀÇ ³»¿ë¹° 
-int brick_action; //°´Ã¼ÀÇ Çàµ¿
-int free_drop_delay = 20; //³«ÇÏ ½Ã°£ °£°İ 
-int free_drop_count; //³«ÇÏ ½Ã°£ Ä«¿îÆ®  
+int win[winHeight][winWidth]; //ì°½ì˜ ë‚´ìš©ë¬¼ 
+int brick_action; //ê°ì²´ì˜ í–‰ë™
+int free_drop_delay = 20; //ë‚™í•˜ ì‹œê°„ ê°„ê²© 
+int free_drop_count; //ë‚™í•˜ ì‹œê°„ ì¹´ìš´íŠ¸  
 int state_hold = 0;
 int state_brick, state_next = 0;
-int level = 0; //°ÔÀÓ ·¹º§
-// °´Ã¼ÀÇ ¸ğ¾ç 7°³, È¸Àü 4°³, y, x
+int level = 0; //ê²Œì„ ë ˆë²¨
+// ê°ì²´ì˜ ëª¨ì–‘ 7ê°œ, íšŒì „ 4ê°œ, y, x
 char brick[7][4][4][4] = {
-// ¤Ç È¸Àü 0
+// ã…— íšŒì „ 0
 0,1,0,0,
 1,1,1,0,
 0,0,0,0,
 0,0,0,0,
-// ¤¿ È¸Àü 1
+// ã… íšŒì „ 1
 0,1,0,0,
 0,1,1,0,
 0,1,0,0,
 0,0,0,0,
-// ¤Ì È¸Àü 2
+// ã…œ íšŒì „ 2
 0,0,0,0,
 1,1,1,0,
 0,1,0,0,
 0,0,0,0,
-// ¤Ã È¸Àü 3
+// ã…“ íšŒì „ 3
 0,1,0,0,
 1,1,0,0,
 0,1,0,0,
 0,0,0,0,
-//Z È¸Àü0
+//Z íšŒì „0
 0,1,1,0,
 1,1,0,0,
 0,0,0,0,
 0,0,0,0,
-//Z È¸Àü1
+//Z íšŒì „1
 0,1,0,0,
 0,1,1,0,
 0,0,1,0,
 0,0,0,0,
-//Z È¸Àü2
+//Z íšŒì „2
 0,1,1,0,
 1,1,0,0,
 0,0,0,0,
 0,0,0,0,
-//Z È¸Àü3
+//Z íšŒì „3
 0,1,0,0,
 0,1,1,0,
 0,0,1,0,
 0,0,0,0,
-//Z È¸Àü0
+//Z íšŒì „0
 1,1,0,0,
 0,1,1,0,
 0,0,0,0,
 0,0,0,0,
-//Z È¸Àü1
+//Z íšŒì „1
 0,1,0,0,
 1,1,0,0,
 1,0,0,0,
 0,0,0,0,
-//Z È¸Àü2
+//Z íšŒì „2
 1,1,0,0,
 0,1,1,0,
 0,0,0,0,
 0,0,0,0,
-//Z È¸Àü3
+//Z íšŒì „3
 0,1,0,0,
 1,1,0,0,
 1,0,0,0,
 0,0,0,0,
-//¤¡È¸Àü0
+//ã„±íšŒì „0
 1,1,0,0,
 0,1,0,0,
 0,1,0,0,
 0,0,0,0,
-//¤¡È¸Àü1
+//ã„±íšŒì „1
 0,0,1,0,
 1,1,1,0,
 0,0,0,0,
 0,0,0,0,
-//¤¡È¸Àü2
+//ã„±íšŒì „2
 0,1,0,0,
 0,1,0,0,
 0,1,1,0,
 0,0,0,0,
-//¤¡È¸Àü3
+//ã„±íšŒì „3
 0,0,0,0,
 1,1,1,0,
 1,0,0,0,
 0,0,0,0,
-//¤¤È¸Àü0
+//ã„´íšŒì „0
 0,1,1,0,
 0,1,0,0,
 0,1,0,0,
 0,0,0,0,
-//¤¤È¸Àü1
+//ã„´íšŒì „1
 0,0,0,0,
 1,1,1,0,
 0,0,1,0,
 0,0,0,0,
-//¤¤È¸Àü2
+//ã„´íšŒì „2
 0,1,0,0,
 0,1,0,0,
 1,1,0,0,
 0,0,0,0,
-//¤¤È¸Àü3
+//ã„´íšŒì „3
 1,0,0,0,
 1,1,1,0,
 0,0,0,0,
 0,0,0,0,
-//Á÷¼± È¸Àü0
+//ì§ì„  íšŒì „0
 0,1,0,0,
 0,1,0,0,
 0,1,0,0,
 0,1,0,0,
-//Á÷¼± È¸Àü1
+//ì§ì„  íšŒì „1
 0,0,0,0,
 1,1,1,1,
 0,0,0,0,
 0,0,0,0,
-//Á÷¼± È¸Àü2
+//ì§ì„  íšŒì „2
 0,1,0,0,
 0,1,0,0,
 0,1,0,0,
 0,1,0,0,
-//Á÷¼± È¸Àü3
+//ì§ì„  íšŒì „3
 0,0,0,0,
 1,1,1,1,
 0,0,0,0,
 0,0,0,0,
-//»óÀÚ È¸Àü0
+//ìƒì íšŒì „0
 1,1,0,0,
 1,1,0,0,
 0,0,0,0,
 0,0,0,0,
-//»óÀÚ È¸Àü1
+//ìƒì íšŒì „1
 1,1,0,0,
 1,1,0,0,
 0,0,0,0,
 0,0,0,0,
-//»óÀÚ È¸Àü2
+//ìƒì íšŒì „2
 1,1,0,0,
 1,1,0,0,
 0,0,0,0,
 0,0,0,0,
-//»óÀÚ È¸Àü3
+//ìƒì íšŒì „3
 1,1,0,0,
 1,1,0,0,
 0,0,0,0,
@@ -215,19 +215,19 @@ int GameOver;
 int GamePoint;
 
 //////////////////////////////////////////////////////////////
-// ÇÔ¼ö Á¤ÀÇ ºÎºĞ 
+// í•¨ìˆ˜ ì •ì˜ ë¶€ë¶„ 
 //////////////////////////////////////////////////////////////
 
 
 void main()
 {
-	Start();  //°ÔÀÓ ÃÊ±â »óÅÂ ¼³Á¤
+	Start();  //ê²Œì„ ì´ˆê¸° ìƒíƒœ ì„¤ì •
 	while (!GameOver)
 	{
-		Display(); //È­¸é¿¡ ÇöÀç »óÅÂ ±×¸®±â
-		checkKey(); //Å°º¸µå ÀÔ·Â Ã³¸®
-		Update(); //°ÔÀÓ °´Ã¼ »óÅÂ ¾÷µ¥ÀÌÆ® 
-		Sleep(40); //40ms ÀáÀÚ±â
+		Display(); //í™”ë©´ì— í˜„ì¬ ìƒíƒœ ê·¸ë¦¬ê¸°
+		checkKey(); //í‚¤ë³´ë“œ ì…ë ¥ ì²˜ë¦¬
+		Update(); //ê²Œì„ ê°ì²´ ìƒíƒœ ì—…ë°ì´íŠ¸ 
+		Sleep(40); //40ms ì ìê¸°
 	}
 }
 void Erase()
@@ -242,23 +242,23 @@ void Erase()
 	}
 }
 //////////////////////////////////////////////////////////////
-void gotoXY(int x, int y) //ÄÜ¼Ö È­¸é Æ¯Á¤ À§Ä¡·Î ÀÌµ¿
+void gotoXY(int x, int y) //ì½˜ì†” í™”ë©´ íŠ¹ì • ìœ„ì¹˜ë¡œ ì´ë™
 {
 	COORD Pos = { x, y };
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
 }
 
 //////////////////////////////////////////////////////////////
-void Start() //°ÔÀÓ ÃÊ±â »óÅÂ ¼³Á¤
+void Start() //ê²Œì„ ì´ˆê¸° ìƒíƒœ ì„¤ì •
 {
 	int x, y;
-	srand(time(NULL)); //³­¼ö ¹ß»ı ½ÃÀÛÁ¡ ÃÊ±âÈ­
-	GameOver = 0; //°ÔÀÓ Á¾·á °ª ÃÊ±âÈ­
-	GamePoint = 0; //°ÔÀÓ Á¡¼ö ÃÊ±âÈ­
-	NewBrick(); //»õ °³Ã¼ ¸¸µé±â
+	srand(time(NULL)); //ë‚œìˆ˜ ë°œìƒ ì‹œì‘ì  ì´ˆê¸°í™”
+	GameOver = 0; //ê²Œì„ ì¢…ë£Œ ê°’ ì´ˆê¸°í™”
+	GamePoint = 0; //ê²Œì„ ì ìˆ˜ ì´ˆê¸°í™”
+	NewBrick(); //ìƒˆ ê°œì²´ ë§Œë“¤ê¸°
 	hideCursor();
-	free_drop_count = free_drop_delay; //20 ÇÁ·¹ÀÓ¿¡ 1È¸ ´Ù¿î 
-	//Å×Æ®¸®½º À©µµ¿ì ÃÊ±âÈ­
+	free_drop_count = free_drop_delay; //20 í”„ë ˆì„ì— 1íšŒ ë‹¤ìš´ 
+	//í…ŒíŠ¸ë¦¬ìŠ¤ ìœˆë„ìš° ì´ˆê¸°í™”
 	for (x = 0; x < winWidth; x++)
 	{
 		for (y = 0; y < winHeight; y++)
@@ -277,7 +277,7 @@ void Start() //°ÔÀÓ ÃÊ±â »óÅÂ ¼³Á¤
 }
 
 //////////////////////////////////////////////////////////////
-int IsCollision() //°ÔÀÓ °´Ã¼ Ãæµ¹ °Ë»ç
+int IsCollision() //ê²Œì„ ê°ì²´ ì¶©ëŒ ê²€ì‚¬
 {
 	int x, y;
 	for (y = 0; y < 4; y++)
@@ -288,16 +288,16 @@ int IsCollision() //°ÔÀÓ °´Ã¼ Ãæµ¹ °Ë»ç
 			{
 				if (win[brick_y + y][brick_x + x] != 0)
 				{
-					return 1; //Ãæµ¹ ÀÖÀ½
+					return 1; //ì¶©ëŒ ìˆìŒ
 				}
 			}
 		}
 	}
-	return 0; //Ãæµ¹ ¾øÀ½
+	return 0; //ì¶©ëŒ ì—†ìŒ
 }
 
 //////////////////////////////////////////////////////////////
-void FixBrick() //°ÔÀÓ °´Ã¼ °íÁ¤
+void FixBrick() //ê²Œì„ ê°ì²´ ê³ ì •
 {
 	int x, y;
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), brick_shape + 1);
@@ -307,7 +307,7 @@ void FixBrick() //°ÔÀÓ °´Ã¼ °íÁ¤
 		{
 			if (brick[brick_shape][brick_rotation][y][x] == 1)
 			{
-				// ¿ø·¡´Â win[brick_y + y][brick_x + x] = 1;
+				// ì›ë˜ëŠ” win[brick_y + y][brick_x + x] = 1;
 				win[brick_y + y][brick_x + x] = brick_shape + 1;
 			}
 		}
@@ -316,14 +316,14 @@ void FixBrick() //°ÔÀÓ °´Ã¼ °íÁ¤
 }
 
 //////////////////////////////////////////////////////////////
-void NewBrick() //»õ·Î¿î °´Ã¼ ¸¸µé±â
+void NewBrick() //ìƒˆë¡œìš´ ê°ì²´ ë§Œë“¤ê¸°
 {
 	Erase();
-	srand(time(NULL)); //³­¼ö ¹ß»ı ½ÃÀÛÁ¡ ÃÊ±âÈ­ 
-	brick_x = winWidth / 2; //°´Ã¼ÀÇ x À§Ä¡
-	brick_y = 1; //°´Ã¼ÀÇ y À§Ä¡
+	srand(time(NULL)); //ë‚œìˆ˜ ë°œìƒ ì‹œì‘ì  ì´ˆê¸°í™” 
+	brick_x = winWidth / 2; //ê°ì²´ì˜ x ìœ„ì¹˜
+	brick_y = 1; //ê°ì²´ì˜ y ìœ„ì¹˜
 	if (brick_number == 0) {
-		brick_shape = rand() % 7; //¸ğ¾ç 0 ~ 6 
+		brick_shape = rand() % 7; //ëª¨ì–‘ 0 ~ 6 
 		next_brick = rand() % 7;
 		tmp_brick = next_brick;
 	}
@@ -332,20 +332,20 @@ void NewBrick() //»õ·Î¿î °´Ã¼ ¸¸µé±â
 		next_brick = rand() % 7;
 		tmp_brick = next_brick;
 	}
-	brick_rotation = 0; //È¸Àü ¾øÀ½ 
+	brick_rotation = 0; //íšŒì „ ì—†ìŒ 
 	brick_action = FREE_DROP;
 	brick_number++;
 }
 
 //////////////////////////////////////////////////////////////
-void BarCheck() //´©Àû ºí·Ï Á¦°Å Á¡¼ö ¿Ã¸®±â
+void BarCheck() //ëˆ„ì  ë¸”ë¡ ì œê±° ì ìˆ˜ ì˜¬ë¦¬ê¸°
 {
 	int x, y, bar, i, j;
 	for (y = 1; y < winHeight - 1; y++)
 	{
-		//ÇÑÁÙ °Ë»ç Loop 
+		//í•œì¤„ ê²€ì‚¬ Loop 
 		bar = 0;
-		// bar : ±× ÁÙ¿¡ ¾ó¸¶³ª ÀÖ³Ä ¸Â½À´Ï´Ù.
+		// bar : ê·¸ ì¤„ì— ì–¼ë§ˆë‚˜ ìˆëƒ ë§ìŠµë‹ˆë‹¤.
 		for (x = 1; x < winWidth - 1; x++)
 		{
 			if (win[y][x] >= 1) {
@@ -373,38 +373,38 @@ void BarCheck() //´©Àû ºí·Ï Á¦°Å Á¡¼ö ¿Ã¸®±â
 
 
 //////////////////////////////////////////////////////////////
-void Display() //È­¸é¿¡ ÇöÀç »óÅÂ ±×¸®±â
+void Display() //í™”ë©´ì— í˜„ì¬ ìƒíƒœ ê·¸ë¦¬ê¸°
 {
 	int x, y;
 
-	//Ã¢ ±×¸®±â 
+	//ì°½ ê·¸ë¦¬ê¸° 
 	for (y = 0; y < winHeight; y++)
 	{
 		gotoXY(winX, winY + y);
 		for (x = 0; x < winWidth; x++)
 		{
-			// Â÷ÀÖ´Â ºí·°
-			// win 1 -> ºí·°
-			// win 2 -> Å×µÎ¸®º®
+			// ì°¨ìˆëŠ” ë¸”ëŸ­
+			// win 1 -> ë¸”ëŸ­
+			// win 2 -> í…Œë‘ë¦¬ë²½
 			if (win[y][x] >= 1) {
-				//ÀÌ»Ú´Ù...
+				//ì´ì˜ë‹¤...
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), win[y][x]);
-				printf("¡á");
+				printf("â– ");
 			}
 			else if (win[y][x] == TEDURI_WALL) {
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-				printf("¡à");
+				printf("â–¡");
 			}
 			else {
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-				printf("¡¤");
+				printf("Â·");
 			}
 		}
 		printf("\n");
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 
-	// Áö±İ ÄÁÆ®·ÑÇÏ´Â ºí·Ï ±×¸®±â
+	// ì§€ê¸ˆ ì»¨íŠ¸ë¡¤í•˜ëŠ” ë¸”ë¡ ê·¸ë¦¬ê¸°
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), brick_shape + 1);
 	for (y = 0; y < 4; y++)
 	{
@@ -413,12 +413,12 @@ void Display() //È­¸é¿¡ ÇöÀç »óÅÂ ±×¸®±â
 			if (brick[brick_shape][brick_rotation][y][x] == 1)
 			{
 				gotoXY(winX + (brick_x + x) * 2, winY + brick_y + y);
-				printf("¡á");
+				printf("â– ");
 			}
 		}
 	}
 
-	//´ÙÀ½ ºí·Ï
+	//ë‹¤ìŒ ë¸”ë¡
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), next_brick + 1);
 	for (y = 0; y < 4; y++)
 	{
@@ -427,21 +427,21 @@ void Display() //È­¸é¿¡ ÇöÀç »óÅÂ ±×¸®±â
 			if (brick[next_brick][0][y][x] == 1)
 			{
 				gotoXY(winX + x * 2 - 10, 6 + y);
-				printf("¡á");
+				printf("â– ");
 			}
 		}
 	}
 	//FixBrick();
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
 	gotoXY(winX + x * 2 - 19, y);
-	printf("´ÙÀ½ ºí·Ï");
-	//Á¡¼ö Ç¥½Ã
+	printf("ë‹¤ìŒ ë¸”ë¡");
+	//ì ìˆ˜ í‘œì‹œ
 	gotoXY(30, 25);
 	printf("Point = %d | Level = %d", GamePoint, level);
 }
 
 //////////////////////////////////////////////////////////////
-void Update() //°ÔÀÓ °´Ã¼ »óÅÂ ¾÷µ¥ÀÌÆ® 
+void Update() //ê²Œì„ ê°ì²´ ìƒíƒœ ì—…ë°ì´íŠ¸ 
 {
 	switch (brick_action)
 	{
@@ -451,10 +451,10 @@ void Update() //°ÔÀÓ °´Ã¼ »óÅÂ ¾÷µ¥ÀÌÆ®
 		} while (!IsCollision());
 		brick_y--;
 		if (brick_y == 1) GameOver = 1;
-		FixBrick(); //°³Ã¼ °íÁ¤
-		BarCheck(); //´©Àû »óÅÂ È®ÀÎ 
-		NewBrick(); //»õ °³Ã¼ ¸¸µé±â
-		free_drop_count = free_drop_delay; //20 ÇÁ·¹ÀÓ¿¡ 1È¸ ´Ù¿î 
+		FixBrick(); //ê°œì²´ ê³ ì •
+		BarCheck(); //ëˆ„ì  ìƒíƒœ í™•ì¸ 
+		NewBrick(); //ìƒˆ ê°œì²´ ë§Œë“¤ê¸°
+		free_drop_count = free_drop_delay; //20 í”„ë ˆì„ì— 1íšŒ ë‹¤ìš´ 
 		brick_action = FREE_DROP;
 		break;
 	case MOVE_LEFT:
@@ -473,10 +473,10 @@ void Update() //°ÔÀÓ °´Ã¼ »óÅÂ ¾÷µ¥ÀÌÆ®
 		{
 			brick_y--;
 			if (brick_y == 1) GameOver = 1;
-			FixBrick(); //°³Ã¼ °íÁ¤
-			BarCheck(); //´©Àû »óÅÂ È®ÀÎ 
-			NewBrick(); //»õ °³Ã¼ ¸¸µé±â
-			free_drop_count = free_drop_delay; //20 ÇÁ·¹ÀÓ¿¡ 1È¸ ´Ù¿î 
+			FixBrick(); //ê°œì²´ ê³ ì •
+			BarCheck(); //ëˆ„ì  ìƒíƒœ í™•ì¸ 
+			NewBrick(); //ìƒˆ ê°œì²´ ë§Œë“¤ê¸°
+			free_drop_count = free_drop_delay; //20 í”„ë ˆì„ì— 1íšŒ ë‹¤ìš´ 
 		}
 		brick_action = FREE_DROP;
 		break;
@@ -504,15 +504,15 @@ void Update() //°ÔÀÓ °´Ã¼ »óÅÂ ¾÷µ¥ÀÌÆ®
 }
 
 //////////////////////////////////////////////////////////////
-void checkKey() //Å°º¸µå Ã³¸® ´ã´ç 
+void checkKey() //í‚¤ë³´ë“œ ì²˜ë¦¬ ë‹´ë‹¹ 
 {
 	int key;
-	if (_kbhit() != 0) //Å°º¸µå ´­¸² È®ÀÎ 
+	if (_kbhit() != 0) //í‚¤ë³´ë“œ ëˆŒë¦¼ í™•ì¸ 
 	{
-		key = _getch(); //ÀÏ´Ü ÇÑ ±ÛÀÚ ÀĞ±â 
-		if (key == 224) //Å°º¸µå ½ºÄµ ÄÚµå 224ÀÌ¸é ±â´ÉÅ° 
+		key = _getch(); //ì¼ë‹¨ í•œ ê¸€ì ì½ê¸° 
+		if (key == 224) //í‚¤ë³´ë“œ ìŠ¤ìº” ì½”ë“œ 224ì´ë©´ ê¸°ëŠ¥í‚¤ 
 		{
-			key = _getch(); //´ÙÀ½ ÇÑ ±ÛÀÚ Ãß°¡ ÀĞ±â
+			key = _getch(); //ë‹¤ìŒ í•œ ê¸€ì ì¶”ê°€ ì½ê¸°
 		}
 		switch (key)
 		{
@@ -550,7 +550,7 @@ void checkKey() //Å°º¸µå Ã³¸® ´ã´ç
 						if (brick[brick_shape][brick_rotation][y][x] == 1)
 						{
 							gotoXY(winX + x * 2 + 30, 5 + y);
-							printf("¡á");
+							printf("â– ");
 						}
 					}
 				}
@@ -567,7 +567,7 @@ void checkKey() //Å°º¸µå Ã³¸® ´ã´ç
 						if (brick[brick_shape][brick_rotation][y][x] == 1)
 						{
 							gotoXY(winX + (brick_x + x) * 2, winY + brick_y + y);
-							printf("¡á");
+							printf("â– ");
 						}
 					}
 				}
@@ -594,7 +594,7 @@ void checkKey() //Å°º¸µå Ã³¸® ´ã´ç
 	}
 }
 ////////////////////////////////////////////////////
-void hideCursor() //Ä¿¼­ ¼û±â±â
+void hideCursor() //ì»¤ì„œ ìˆ¨ê¸°ê¸°
 {
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO info;
